@@ -1,0 +1,14 @@
+:root {
+  --node-gird--count: 12;
+  --node-grid-column--count: 1;
+}
+
+.node-grid {
+  display: var(--grid--display, grid);
+  grid-template-columns: repeat(var(--node-gird--count), 1fr);
+  grid-column-gap: var(--grid--grid-column-gap, 1.5rem);
+}
+
+.node-grid-column {
+  grid-column: span var(--node-grid-column--count);
+}
