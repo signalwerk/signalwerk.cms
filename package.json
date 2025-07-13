@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:pages": "vite build --mode pages",
+    "preview": "vite preview",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -21,4 +23,4 @@
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10"
   }
-} 
+}

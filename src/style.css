@@ -165,6 +165,82 @@ body {
   }
 }
 
+/* Overview styles */
+.overview {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.overview h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.overview-description {
+  margin-bottom: 3rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #666;
+}
+
+.overview-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.overview-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.overview-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.overview-item h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.overview-item h2 a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.overview-item h2 a:hover {
+  color: #007acc;
+}
+
+.overview-date {
+  color: #888;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.overview-excerpt {
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.overview-empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 3rem;
+}
+
 /* Print styles */
 @media print {
   .node-page {
@@ -181,5 +257,10 @@ body {
     content: " (" attr(href) ")";
     font-size: 0.8em;
     color: #666;
+  }
+  
+  .overview-item:hover {
+    transform: none;
+    box-shadow: none;
   }
 } 
