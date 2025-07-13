@@ -4,7 +4,10 @@ import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
 import { glob } from "glob";
-import { generateStaticHTML, processPageFile } from "./generateStaticHTML.js";
+import {
+  generateStaticHTML,
+  processPageFile,
+} from "./src/processor/generateStaticHTML.js";
 
 async function generateOverviewPage(collectionName) {
   try {
@@ -71,7 +74,7 @@ async function generateOverviewPage(collectionName) {
 
 async function processAllPages() {
   try {
-    const pageFiles = await glob("collections/pages/**/*.json");
+    const pageFiles = await glob("collections/**/*.json");
     console.log(`📄 Found ${pageFiles.length} page files to process`);
 
     const results = [];
@@ -104,65 +107,63 @@ function pagesPlugin() {
     name: "pages-plugin",
     configureServer(server) {
       // API middleware for collection overviews
-      server.middlewares.use("/api/collections", async (req, res, next) => {
-        const url = new URL(req.url, `http://${req.headers.host}`);
-        const collectionName = url.pathname.slice(1); // Remove leading /
-        const collectionPath = path.join("collections", collectionName);
+      //   server.middlewares.use("/api/collections", async (req, res, next) => {
+      //     const url = new URL(req.url, `http://${req.headers.host}`);
+      //     const collectionName = url.pathname.slice(1); // Remove leading /
+      //     const collectionPath = path.join("collections", collectionName);
 
-        try {
-          if (await fs.pathExists(collectionPath)) {
-            const files = await glob(`${collectionPath}/**/*.json`);
-            const items = [];
+      //     try {
+      //       if (await fs.pathExists(collectionPath)) {
+      //         const files = await glob(`${collectionPath}/**/*.json`);
+      //         const items = [];
 
-            for (const filePath of files) {
-              try {
-                const data = await fs.readJson(filePath);
-                const filename = path.basename(filePath, ".json");
-                items.push({
-                  filename,
-                  title: data.title || filename,
-                  path: data.path || `/${filename}/`,
-                  date: data.date,
-                  draft: data.draft || false,
-                  type: data.type || "page",
-                });
-              } catch (fileError) {
-                console.warn(
-                  `Warning: Could not read ${filePath}:`,
-                  fileError.message,
-                );
-              }
-            }
+      //         for (const filePath of files) {
+      //           try {
+      //             const data = await fs.readJson(filePath);
+      //             const filename = path.basename(filePath, ".json");
+      //             items.push({
+      //               filename,
+      //               title: data.title || filename,
+      //               path: data.path || `/${filename}/`,
+      //               date: data.date,
+      //               draft: data.draft || false,
+      //               type: data.type || "page",
+      //             });
+      //           } catch (fileError) {
+      //             console.warn(
+      //               `Warning: Could not read ${filePath}:`,
+      //               fileError.message,
+      //             );
+      //           }
+      //         }
 
-            // Sort by date (newest first) or title
-            items.sort((a, b) => {
-              if (a.date && b.date) {
-                return parseInt(b.date) - parseInt(a.date);
-              }
-              return a.title.localeCompare(b.title);
-            });
+      //         // Sort by date (newest first) or title
+      //         items.sort((a, b) => {
+      //           if (a.date && b.date) {
+      //             return parseInt(b.date) - parseInt(a.date);
+      //           }
+      //           return a.title.localeCompare(b.title);
+      //         });
 
-            res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify({ collection: collectionName, items }));
-          } else {
-            res.statusCode = 404;
-            res.end(JSON.stringify({ error: "Collection not found" }));
-          }
-        } catch (error) {
-          console.error(
-            `❌ Error serving collection ${collectionName}:`,
-            error.message,
-          );
-          res.statusCode = 500;
-          res.end(JSON.stringify({ error: "Server error" }));
-        }
-      });
+      //         res.setHeader("Content-Type", "application/json");
+      //         res.end(JSON.stringify({ collection: collectionName, items }));
+      //       } else {
+      //         res.statusCode = 404;
+      //         res.end(JSON.stringify({ error: "Collection not found" }));
+      //       }
+      //     } catch (error) {
+      //       console.error(
+      //         `❌ Error serving collection ${collectionName}:`,
+      //         error.message,
+      //       );
+      //       res.statusCode = 500;
+      //       res.end(JSON.stringify({ error: "Server error" }));
+      //     }
+      //   });
 
       // API middleware to serve JSON files
-      server.middlewares.use("/api/pages", async (req, res, next) => {
-        const url = new URL(req.url, `http://${req.headers.host}`);
-        const filename = url.pathname.slice(1); // Remove leading /
-        const filePath = path.join("collections/pages", filename);
+      server.middlewares.use("/api/", async (req, res, next) => {
+        const filePath = path.join("collections", req.url);
 
         try {
           if (await fs.pathExists(filePath)) {
@@ -180,7 +181,7 @@ function pagesPlugin() {
       });
 
       // Watch for changes
-      const watcher = chokidar.watch("collections/pages/**/*.json", {
+      const watcher = chokidar.watch("collections/**/*.json", {
         ignored: /node_modules/,
         persistent: true,
       });
