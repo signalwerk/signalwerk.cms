@@ -4,94 +4,7 @@ import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
 import { glob } from "glob";
-
-// Import for SSR - will be loaded dynamically to avoid issues
-async function getTypeProcessor() {
-  try {
-    const { typeProcessor } = await import("./src/components/index.jsx");
-    return typeProcessor;
-  } catch (error) {
-    console.warn("Could not load typeProcessor for SSR:", error.message);
-    return null;
-  }
-}
-
-// Server-side rendering function
-async function generateStaticHTML(processedData) {
-  try {
-    // Dynamic import to avoid issues during config loading
-    const React = (await import("react")).default;
-    const { renderToString } = await import("react-dom/server");
-    const { Helmet } = (await import("react-helmet")).default;
-
-    const typeProcessor = await getTypeProcessor();
-    if (!typeProcessor) {
-      throw new Error("TypeProcessor not available");
-    }
-
-    const configuration = {
-      config: { env: "production" },
-      settings: {
-        page: {
-          html: { lang: "en" },
-          head: { stylesheets: [{ path: "/style.css" }], js: [] },
-        },
-      },
-    };
-
-    const appHtml = renderToString(typeProcessor(processedData, configuration));
-    const helmet = Helmet.renderStatic();
-
-    return `<!DOCTYPE html>
-<html ${helmet.htmlAttributes.toString()}>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    ${helmet.title.toString()}
-    ${helmet.meta.toString()}
-    ${helmet.link.toString()}
-    <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-    <div id="root">${appHtml}</div>
-    <script>
-        console.log('Static page loaded: ${processedData.title || "Untitled"}');
-    </script>
-</body>
-</html>`;
-  } catch (error) {
-    console.error("SSR Error:", error);
-    return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Error - ${processedData.title || "Unknown Page"}</title>
-</head>
-<body>
-    <h1>Build Error</h1>
-    <p>${error.message}</p>
-</body>
-</html>`;
-  }
-}
-
-async function processPageFile(filePath) {
-  try {
-    const pageData = await fs.readJson(filePath);
-    const filename = path.basename(filePath, ".json");
-    const outputPath = path.join("dist", `${filename}.html`);
-
-    await fs.ensureDir("dist");
-    const html = await generateStaticHTML(pageData);
-    await fs.writeFile(outputPath, html);
-
-    console.log(`✅ Generated: ${outputPath}`);
-    return outputPath;
-  } catch (error) {
-    console.error(`❌ Error processing ${filePath}:`, error.message);
-    return null;
-  }
-}
+import { generateStaticHTML, processPageFile } from "./generateStaticHTML.js";
 
 async function generateOverviewPage(collectionName) {
   try {
@@ -113,7 +26,7 @@ async function generateOverviewPage(collectionName) {
           path: data.path || `/${filename}/`,
           date: data.date,
           draft: data.draft || false,
-          type: data.type || "page"
+          type: data.type || "page",
         });
       } catch (fileError) {
         console.warn(`Warning: Could not read ${filePath}:`, fileError.message);
@@ -133,20 +46,25 @@ async function generateOverviewPage(collectionName) {
       title: collectionName.charAt(0).toUpperCase() + collectionName.slice(1),
       description: `Welcome to the ${collectionName} collection. Here you can find all available ${collectionName}.`,
       collection: collectionName,
-      items
+      items,
     };
 
     await fs.ensureDir("dist");
     const html = await generateStaticHTML(overviewData);
-    
+
     // Generate both index.html and collection index
     await fs.writeFile(path.join("dist", "index.html"), html);
     await fs.writeFile(path.join("dist", `${collectionName}.html`), html);
-    
-    console.log(`✅ Generated overview: dist/index.html and dist/${collectionName}.html`);
+
+    console.log(
+      `✅ Generated overview: dist/index.html and dist/${collectionName}.html`,
+    );
     return `dist/index.html`;
   } catch (error) {
-    console.error(`❌ Error generating overview for ${collectionName}:`, error.message);
+    console.error(
+      `❌ Error generating overview for ${collectionName}:`,
+      error.message,
+    );
     return null;
   }
 }
@@ -157,7 +75,7 @@ async function processAllPages() {
     console.log(`📄 Found ${pageFiles.length} page files to process`);
 
     const results = [];
-    
+
     // Process individual pages
     for (const filePath of pageFiles) {
       const result = await processPageFile(filePath);
@@ -206,10 +124,13 @@ function pagesPlugin() {
                   path: data.path || `/${filename}/`,
                   date: data.date,
                   draft: data.draft || false,
-                  type: data.type || "page"
+                  type: data.type || "page",
                 });
               } catch (fileError) {
-                console.warn(`Warning: Could not read ${filePath}:`, fileError.message);
+                console.warn(
+                  `Warning: Could not read ${filePath}:`,
+                  fileError.message,
+                );
               }
             }
 
@@ -228,7 +149,10 @@ function pagesPlugin() {
             res.end(JSON.stringify({ error: "Collection not found" }));
           }
         } catch (error) {
-          console.error(`❌ Error serving collection ${collectionName}:`, error.message);
+          console.error(
+            `❌ Error serving collection ${collectionName}:`,
+            error.message,
+          );
           res.statusCode = 500;
           res.end(JSON.stringify({ error: "Server error" }));
         }
