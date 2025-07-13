@@ -1,3 +1,4 @@
+import React from "react";
 import { typeProcessor } from "../index.jsx";
 
 export function box(node, configuration) {

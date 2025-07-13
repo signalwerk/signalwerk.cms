@@ -1,3 +1,4 @@
+import React from "react";
 import { typeProcessor } from "../index.jsx";
 // import "./column.css";
 
@@ -10,7 +11,7 @@ export function gridColumn(data, configuration) {
         style={{ "--node-grid-column--count": data.cols || 12 }}
       >
         {data?.children?.map((item, index) => (
-          <>{typeProcessor({ type: "column", ...item }, configuration)}</>
+          <>{typeProcessor(item, configuration)}</>
         ))}
       </div>
     </>
