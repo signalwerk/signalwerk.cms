@@ -1,8 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import { typeProcessor } from "../index.jsx";
 
-export function page(node) {
+export function page(node, { typeProcessor }) {
   if (!node) return null;
 
   const lang = node.attributes?.lang || "en";

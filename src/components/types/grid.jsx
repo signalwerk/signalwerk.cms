@@ -1,7 +1,6 @@
 import React from "react";
-import { typeProcessor } from "../index.jsx";
 
-export function grid(data) {
+export function grid(data, { typeProcessor }) {
   return (
     <>
       {/* <pre>{JSON.stringify({ grid: data }, null, 2)}</pre> */}

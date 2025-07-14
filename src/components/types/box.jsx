@@ -1,7 +1,6 @@
 import React from "react";
-import { typeProcessor } from "../index.jsx";
 
-export function box(node) {
+export function box(node, { typeProcessor }) {
   // Construct the className string
   const baseClass = "nodebox";
   const nodeClass = node.class ? ` ${node.class}` : "";

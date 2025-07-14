@@ -6,3 +6,5 @@ export function text(node) {
 
   return <div className={`node-text ${node.class || ""}`}>{node.content}</div>;
 }
+
+text.type = "text";

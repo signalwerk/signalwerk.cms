@@ -18,19 +18,19 @@ export function typeProcessor(data) {
 
   switch (data.type) {
     case "page": {
-      return page(data);
+      return page(data, { typeProcessor });
     }
     case "text": {
       return <>{text(data)}</>;
     }
     case "grid": {
-      return <>{grid(data)}</>;
+      return <>{grid(data, { typeProcessor })}</>;
     }
     case "box": {
-      return <>{box(data)}</>;
+      return <>{box(data, { typeProcessor })}</>;
     }
     case "grid-column": {
-      return gridColumn(data);
+      return gridColumn(data, { typeProcessor });
     }
     case "mediaItems": {
       return mediaItems(data);
