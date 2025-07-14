@@ -9,7 +9,7 @@ import { grid } from "./types/grid.jsx";
 import { box } from "./types/box.jsx";
 import { Helmet } from "react-helmet";
 
-export function typeProcessor(data) {
+export function typeProcessor(data, configuration = {}) {
   if (!data) return null;
 
   // if data is an array, process each item

@@ -1,3 +1,5 @@
+import React from "react";
+
 export function text(node) {
   if (!node) return null;
   if (!node.content) return null;
