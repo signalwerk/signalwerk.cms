@@ -7,9 +7,8 @@ import { markdown } from "./types/markdown.jsx";
 import { gridColumn } from "./types/gridColumn.jsx";
 import { grid } from "./types/grid.jsx";
 import { box } from "./types/box.jsx";
-import { Helmet } from "react-helmet";
 
-export function typeProcessor(data, configuration = {}) {
+export function typeProcessor(data) {
   if (!data) return null;
 
   // if data is an array, process each item

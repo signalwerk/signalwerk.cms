@@ -31,12 +31,15 @@ async function processAllPages() {
       // Collect errors but continue processing other files to show all issues
       errors.push({
         filePath,
-        error: error instanceof BuildError ? error : new BuildError(
-          `Unexpected error during page processing`,
-          filePath,
-          error,
-          'Page Processing'
-        )
+        error:
+          error instanceof BuildError
+            ? error
+            : new BuildError(
+                `Unexpected error during page processing`,
+                filePath,
+                error,
+                "Page Processing",
+              ),
       });
     }
   }
@@ -48,27 +51,29 @@ async function processAllPages() {
   } catch (cssError) {
     const buildError = new BuildError(
       `Failed to copy CSS file`,
-      'src/style.css',
+      "src/style.css",
       cssError,
-      'Asset Copying'
+      "Asset Copying",
     );
     errors.push({
-      filePath: 'src/style.css',
-      error: buildError
+      filePath: "src/style.css",
+      error: buildError,
     });
   }
 
   // If there were any errors, report them all and throw
   if (errors.length > 0) {
     console.error(`\n💀 BUILD FAILED WITH ${errors.length} ERROR(S):\n`);
-    
+
     errors.forEach((errorInfo, index) => {
       console.error(`\n--- ERROR ${index + 1}/${errors.length} ---`);
       console.error(errorInfo.error.toString());
     });
 
-    console.error(`\n🚨 Build process stopped due to ${errors.length} error(s). Please fix the issues above and try again.\n`);
-    
+    console.error(
+      `\n🚨 Build process stopped due to ${errors.length} error(s). Please fix the issues above and try again.\n`,
+    );
+
     // Throw the first error to fail the build
     throw errors[0].error;
   }
@@ -162,7 +167,9 @@ function pagesPlugin() {
           await processPageFile(filePath);
           server.ws.send({ type: "full-reload" });
         } catch (error) {
-          console.error(`\n🚨 Error processing ${filePath} during development:`);
+          console.error(
+            `\n🚨 Error processing ${filePath} during development:`,
+          );
           if (error instanceof BuildError) {
             console.error(error.toString());
           } else {
@@ -178,7 +185,9 @@ function pagesPlugin() {
           await processPageFile(filePath);
           server.ws.send({ type: "full-reload" });
         } catch (error) {
-          console.error(`\n🚨 Error processing new file ${filePath} during development:`);
+          console.error(
+            `\n🚨 Error processing new file ${filePath} during development:`,
+          );
           if (error instanceof BuildError) {
             console.error(error.toString());
           } else {
@@ -203,21 +212,21 @@ function pagesPlugin() {
 
     async buildStart() {
       console.log("🔨 Building all pages for production...");
-      
+
       try {
         await processAllPages();
         console.log("🎉 All pages built successfully for production!");
       } catch (error) {
         console.error("\n💀 PRODUCTION BUILD FAILED:");
-        
+
         if (error instanceof BuildError) {
           console.error(error.toString());
         } else {
           console.error("Unexpected build error:", error);
         }
-        
+
         console.error("\n🛑 Build process terminated due to errors.\n");
-        
+
         // This will cause the build to fail
         throw error;
       }
@@ -238,13 +247,15 @@ export default defineConfig({
       // Add better error handling for Rollup
       onwarn(warning, warn) {
         // Show warnings but in a more structured way
-        if (warning.code === 'UNRESOLVED_IMPORT') {
-          console.warn(`⚠️  Unresolved import: ${warning.source} in ${warning.importer}`);
+        if (warning.code === "UNRESOLVED_IMPORT") {
+          console.warn(
+            `⚠️  Unresolved import: ${warning.source} in ${warning.importer}`,
+          );
         } else {
           console.warn(`⚠️  ${warning.code}: ${warning.message}`);
         }
         warn(warning);
-      }
+      },
     },
   },
   server: {

@@ -9,12 +9,12 @@ import { typeProcessor } from "../components/index.jsx";
 class BuildError extends Error {
   constructor(message, filePath, originalError = null, phase = null) {
     super(message);
-    this.name = 'BuildError';
+    this.name = "BuildError";
     this.filePath = filePath;
     this.originalError = originalError;
     this.phase = phase;
     this.timestamp = new Date().toISOString();
-    
+
     // Preserve original stack trace if available
     if (originalError && originalError.stack) {
       this.stack = `${this.stack}\n\nOriginal Error:\n${originalError.stack}`;
@@ -23,8 +23,8 @@ class BuildError extends Error {
 
   toString() {
     const parts = [
-      `🚨 BUILD ERROR in ${this.filePath || 'unknown file'}`,
-      `📍 Phase: ${this.phase || 'unknown'}`,
+      `🚨 BUILD ERROR in ${this.filePath || "unknown file"}`,
+      `📍 Phase: ${this.phase || "unknown"}`,
       `⏰ Time: ${this.timestamp}`,
       `💥 Message: ${this.message}`,
     ];
@@ -36,32 +36,22 @@ class BuildError extends Error {
       }
     }
 
-    return parts.join('\n');
+    return parts.join("\n");
   }
 }
 
 // Server-side rendering function
-export async function generateStaticHTML(processedData, filePath = 'unknown') {
+export async function generateStaticHTML(processedData, filePath = "unknown") {
   try {
-    const configuration = {
-      config: { env: "production" },
-      settings: {
-        page: {
-          html: { lang: "en" },
-          head: { stylesheets: [{ path: "/style.css" }], js: [] },
-        },
-      },
-    };
-
     let appHtml;
     try {
-      appHtml = renderToString(typeProcessor(processedData, configuration));
+      appHtml = renderToString(typeProcessor(processedData));
     } catch (renderError) {
       throw new BuildError(
-        `Failed to render React component`, 
-        filePath, 
-        renderError, 
-        'SSR Rendering'
+        `Failed to render React component`,
+        filePath,
+        renderError,
+        "SSR Rendering",
       );
     }
 
@@ -70,10 +60,10 @@ export async function generateStaticHTML(processedData, filePath = 'unknown') {
       helmet = Helmet.renderStatic();
     } catch (helmetError) {
       throw new BuildError(
-        `Failed to render Helmet meta tags`, 
-        filePath, 
-        helmetError, 
-        'Helmet Processing'
+        `Failed to render Helmet meta tags`,
+        filePath,
+        helmetError,
+        "Helmet Processing",
       );
     }
 
@@ -99,20 +89,20 @@ export async function generateStaticHTML(processedData, filePath = 'unknown') {
     if (error instanceof BuildError) {
       throw error;
     }
-    
+
     // Otherwise, wrap it in a BuildError
     throw new BuildError(
-      `HTML generation failed`, 
-      filePath, 
-      error, 
-      'HTML Generation'
+      `HTML generation failed`,
+      filePath,
+      error,
+      "HTML Generation",
     );
   }
 }
 
 export async function processPageFile(filePath) {
   console.log(`🔄 Processing: ${filePath}`);
-  
+
   try {
     // Read and validate JSON file
     let pageData;
@@ -120,20 +110,20 @@ export async function processPageFile(filePath) {
       pageData = await fs.readJson(filePath);
     } catch (jsonError) {
       throw new BuildError(
-        `Failed to read or parse JSON file`, 
-        filePath, 
-        jsonError, 
-        'JSON Parsing'
+        `Failed to read or parse JSON file`,
+        filePath,
+        jsonError,
+        "JSON Parsing",
       );
     }
 
     // Validate required data structure
-    if (!pageData || typeof pageData !== 'object') {
+    if (!pageData || typeof pageData !== "object") {
       throw new BuildError(
-        `Invalid page data structure - expected object, got ${typeof pageData}`, 
-        filePath, 
-        null, 
-        'Data Validation'
+        `Invalid page data structure - expected object, got ${typeof pageData}`,
+        filePath,
+        null,
+        "Data Validation",
       );
     }
 
@@ -145,25 +135,25 @@ export async function processPageFile(filePath) {
       await fs.ensureDir("dist");
     } catch (dirError) {
       throw new BuildError(
-        `Failed to create output directory`, 
-        filePath, 
-        dirError, 
-        'Directory Creation'
+        `Failed to create output directory`,
+        filePath,
+        dirError,
+        "Directory Creation",
       );
     }
 
     // Generate HTML
     const html = await generateStaticHTML(pageData, filePath);
-    
+
     // Write output file
     try {
       await fs.writeFile(outputPath, html);
     } catch (writeError) {
       throw new BuildError(
-        `Failed to write output file to ${outputPath}`, 
-        filePath, 
-        writeError, 
-        'File Writing'
+        `Failed to write output file to ${outputPath}`,
+        filePath,
+        writeError,
+        "File Writing",
       );
     }
 
@@ -172,18 +162,18 @@ export async function processPageFile(filePath) {
   } catch (error) {
     // If it's already a BuildError, just log and re-throw
     if (error instanceof BuildError) {
-      console.error('\n' + error.toString() + '\n');
+      console.error("\n" + error.toString() + "\n");
       throw error;
     }
-    
+
     // Otherwise, wrap and throw
     const buildError = new BuildError(
-      `Page processing failed`, 
-      filePath, 
-      error, 
-      'Page Processing'
+      `Page processing failed`,
+      filePath,
+      error,
+      "Page Processing",
     );
-    console.error('\n' + buildError.toString() + '\n');
+    console.error("\n" + buildError.toString() + "\n");
     throw buildError;
   }
 }
