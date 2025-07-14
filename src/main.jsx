@@ -9,13 +9,6 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Try to get page data from window first (for built pages)
-    if (window.pageData) {
-      setPageData(window.pageData);
-      setLoading(false);
-      return;
-    }
-
     // In dev mode, load data based on URL
     const loadPageData = async () => {
       try {
@@ -32,48 +25,6 @@ function App() {
         } else {
           throw new Error("Invalid URL format");
         }
-
-        // // Handle different URL patterns
-        // if (path === '/' || path === '/index.html' || path === '/pages/' || path === '/pages') {
-        //   // Load overview of pages collection
-        //   const response = await fetch('/api/collections/pages');
-        //   if (response.ok) {
-        //     const data = await response.json();
-        //     setPageData({
-        //       type: 'overview',
-        //       title: 'Pages',
-        //       description: 'Welcome to the pages collection. Here you can find all available pages.',
-        //       collection: data.collection,
-        //       items: data.items
-        //     });
-        //   } else {
-        //     throw new Error(`Failed to load collection overview: ${response.status}`);
-        //   }
-        // } else {
-        //   // Handle individual page requests
-        //   let filename = '';
-
-        //   if (path.startsWith('/pages/')) {
-        //     // Format: /pages/filename or /pages/filename.html
-        //     filename = path.replace(/^\/pages\//, '').replace(/\.html$/, '');
-        //   } else {
-        //     // Format: /filename or /filename.html (backwards compatibility)
-        //     filename = path.replace(/^\//, '').replace(/\.html$/, '');
-        //   }
-
-        //   if (filename) {
-        //     const jsonFile = `${filename}.json`;
-        //     const response = await fetch(`/api/pages/${jsonFile}`);
-        //     if (response.ok) {
-        //       const data = await response.json();
-        //       setPageData(data);
-        //     } else {
-        //       throw new Error(`Page "${filename}" not found: ${response.status}`);
-        //     }
-        //   } else {
-        //     throw new Error('Invalid URL format');
-        //   }
-        // }
       } catch (err) {
         console.error("Error loading page data:", err);
         setError(err.message);
@@ -83,8 +34,8 @@ function App() {
           title: "Page Not Found",
           children: [
             {
-              type: "text",
-              body: `## Page Not Found\n\nCould not load page data. Error: ${err.message}\n\n[← Back to Overview](/)`,
+              type: "markdown",
+              content: `## Page Not Found\n\nCould not load page data. Error: ${err.message}\n\n[← Back to Overview](/)`,
             },
           ],
         });
@@ -105,37 +56,12 @@ function App() {
     );
   }
 
-  // Process the page data
-  const processedData =
-    pageData.type === "overview"
-      ? { type: ":root", children: [pageData] }
-      : pageData.title && pageData.children
-      ? { type: ":root", children: [pageData] }
-      : { type: ":root", children: [{ type: "page", ...pageData }] };
-
-  const configuration = {
-    config: {
-      env: import.meta.env.MODE,
-    },
-    settings: {
-      page: {
-        html: {
-          lang: "en",
-        },
-        head: {
-          stylesheets: [],
-          js: [],
-        },
-      },
-    },
-  };
-
   try {
-    return typeProcessor(processedData, configuration);
+    return typeProcessor(pageData);
   } catch (renderError) {
     console.error("Error processing page data:", renderError);
     return (
-      <div style={{ padding: "20px", color: "red" }}>
+      <div style={{ color: "red" }}>
         <h1>Error Processing Page</h1>
         <p>{renderError.message}</p>
         <details>

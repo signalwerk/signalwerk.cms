@@ -1,3 +1,4 @@
+import React from "react";
 import { renderNode } from "../../../packages/signalwerk.md/src/render.jsx";
 import { mdToAstSync } from "../../../packages/signalwerk.md/src/index.js";
 

@@ -2,30 +2,27 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { typeProcessor } from "../index.jsx";
 
-export function page(node, configuration) {
+export function page(node) {
   if (!node) return null;
-  
-  // Ensure footnotes is an array
-  const footnotes = node.footnotes || [];
-  
+
+  const lang = node.attributes?.lang || "en";
+  const head = node.attributes?.head;
+
   return (
     <>
-      {/* <pre>{JSON.stringify(node, null, 2)}</pre> */}
-      <Helmet>
-        <title>{node.title}</title>
-        <meta name="description" content={node.description} />
+      <Helmet htmlAttributes={{ lang }}>
+        {head?.stylesheets?.map((stylesheet) => (
+          <link href={stylesheet.path} rel="stylesheet" />
+        ))}
+        {head?.js?.map((js) => (
+          <script src={js.path} />
+        ))}
+        <title>{node.attributes?.title}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="utf-8" />
       </Helmet>
       <div className={`node-page ${node.class || ""}`}>
-        <>{node.children && typeProcessor(node.children, configuration)}</>
-        {footnotes.length > 0 && (
-          <ol className="node-page__footnotes">
-            {footnotes.map((footnote, index) => (
-              <li key={index} id={`fn-def-${footnote.identifier || index}`}>
-                <>{typeProcessor(footnote, configuration)}</>
-              </li>
-            ))}
-          </ol>
-        )}
+        <>{node.children && typeProcessor(node.children)}</>
       </div>
     </>
   );

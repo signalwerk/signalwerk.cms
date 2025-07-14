@@ -1,7 +1,7 @@
 import React from "react";
 import { typeProcessor } from "../index.jsx";
 
-export function box(node, configuration) {
+export function box(node) {
   // Construct the className string
   const baseClass = "nodebox";
   const nodeClass = node.class ? ` ${node.class}` : "";
@@ -13,7 +13,7 @@ export function box(node, configuration) {
   return (
     <>
       <div className={className}>
-        <>{node.children && typeProcessor(node.children, configuration)}</>
+        <>{node.children && typeProcessor(node.children)}</>
       </div>
     </>
   );

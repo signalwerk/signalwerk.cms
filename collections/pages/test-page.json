@@ -1,9 +1,13 @@
 {
-  "draft": false,
   "type": "page",
-  "date": "1705863229986",
-  "title": "Test Page",
   "path": "/test-page/",
+  "attributes": {
+    "draft": false,
+    "lang": "de",
+    "date": "1705863229986",
+    "title": "Test Page",
+    "class": "hello"
+  },
   "children": [
     {
       "type": "markdown",
@@ -44,4 +48,4 @@
       "content": "### Navigation\n\nYou can navigate between pages using the overview page that lists all available content in the collection.\n\n### Development\n\nThis page will automatically reload when you make changes to the JSON file during development."
     }
   ]
-} 
+}

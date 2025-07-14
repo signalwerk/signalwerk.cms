@@ -2,7 +2,7 @@ import React from "react";
 import { typeProcessor } from "../index.jsx";
 // import "./column.css";
 
-export function gridColumn(data, configuration) {
+export function gridColumn(data) {
   return (
     <>
       {/* <pre>column -- {JSON.stringify({ column: data }, null, 2)}</pre> */}
@@ -11,7 +11,7 @@ export function gridColumn(data, configuration) {
         style={{ "--node-grid-column--count": data.cols || 12 }}
       >
         {data?.children?.map((item, index) => (
-          <>{typeProcessor(item, configuration)}</>
+          <>{typeProcessor(item)}</>
         ))}
       </div>
     </>
