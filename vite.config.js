@@ -9,87 +9,11 @@ import {
   BuildError,
 } from "./src/processor/generateStaticHTML.js";
 
-import { registerComponents } from "./src/components/index.jsx";
-
 import config from "./cms.config.jsx";
 
 const BASE_DIR = config.content.base || "pages";
 const PATTERN = config.content.pattern || "**/*.json";
 const PAGE_FILES_PATTERN = `${BASE_DIR}/${PATTERN}`;
-
-registerComponents(config);
-
-async function processAllPages() {
-  const pageFiles = await glob(PAGE_FILES_PATTERN);
-  console.log(`📄 Found ${pageFiles.length} page files to process`);
-
-  if (pageFiles.length === 0) {
-    console.warn("⚠️  No page files found to process");
-    return [];
-  }
-
-  const results = [];
-  const errors = [];
-
-  // Process individual pages and collect both results and errors
-  for (const filePath of pageFiles) {
-    try {
-      const result = await processPageFile(filePath);
-      if (result) results.push(result);
-    } catch (error) {
-      // Collect errors but continue processing other files to show all issues
-      errors.push({
-        filePath,
-        error:
-          error instanceof BuildError
-            ? error
-            : new BuildError(
-                `Unexpected error during page processing`,
-                filePath,
-                error,
-                "Page Processing",
-              ),
-      });
-    }
-  }
-
-  // Copy CSS
-  try {
-    await fs.copy("src/style.css", "dist/style.css");
-    console.log("✅ Copied CSS file to dist/");
-  } catch (cssError) {
-    const buildError = new BuildError(
-      `Failed to copy CSS file`,
-      "src/style.css",
-      cssError,
-      "Asset Copying",
-    );
-    errors.push({
-      filePath: "src/style.css",
-      error: buildError,
-    });
-  }
-
-  // If there were any errors, report them all and throw
-  if (errors.length > 0) {
-    console.error(`\n💀 BUILD FAILED WITH ${errors.length} ERROR(S):\n`);
-
-    errors.forEach((errorInfo, index) => {
-      console.error(`\n--- ERROR ${index + 1}/${errors.length} ---`);
-      console.error(errorInfo.error.toString());
-    });
-
-    console.error(
-      `\n🚨 Build process stopped due to ${errors.length} error(s). Please fix the issues above and try again.\n`,
-    );
-
-    // Throw the first error to fail the build
-    throw errors[0].error;
-  }
-
-  console.log(`✅ All ${pageFiles.length} pages processed successfully`);
-  return results;
-}
 
 // Helper function to resolve API paths to actual JSON files
 // the request to return /collections/pages/test-page.json
