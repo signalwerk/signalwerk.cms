@@ -33,7 +33,7 @@ async function processAllPages() {
   // Process individual pages and collect both results and errors
   for (const filePath of pageFiles) {
     try {
-      const result = await processPageFile(filePath);
+      const result = await processPageFile(filePath, { baseDir: BASE_DIR });
       if (result) results.push(result);
     } catch (error) {
       // Collect errors but continue processing other files to show all issues

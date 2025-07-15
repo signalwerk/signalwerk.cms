@@ -97,7 +97,7 @@ export async function generateStaticHTML(processedData, filePath = "unknown") {
   }
 }
 
-export async function processPageFile(filePath) {
+export async function processPageFile(filePath, { baseDir }) {
   console.log(`🔄 Processing: ${filePath}`);
 
   try {
@@ -125,14 +125,21 @@ export async function processPageFile(filePath) {
     }
 
     const filename = path.basename(filePath, ".json");
-    const outputPath = path.join("dist", `${filename}.html`);
 
-    // Ensure output directory exists
+    // Get the relative directory structure from the source file
+    const relativePath = path.relative(baseDir, filePath);
+    const relativeDir = path.dirname(relativePath);
+
+    // Create output path preserving directory structure
+    const outputDir = path.join("dist", relativeDir);
+    const outputPath = path.join(outputDir, `${filename}.html`);
+
+    // Ensure output directory exists (with full path structure)
     try {
-      await fs.ensureDir("dist");
+      await fs.ensureDir(outputDir);
     } catch (dirError) {
       throw new BuildError(
-        `Failed to create output directory`,
+        `Failed to create output directory: ${outputDir}`,
         filePath,
         dirError,
         "Directory Creation",
