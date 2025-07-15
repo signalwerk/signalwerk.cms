@@ -20,9 +20,9 @@ export function page(node, { typeProcessor }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charset="utf-8" />
       </Helmet>
-      <div className={`node-page ${node.class || ""}`}>
-        <>{node.children && typeProcessor(node.children)}</>
-      </div>
+      <main className={`node-page ${node.class || ""}`}>
+        <>{node.attributes?.main && typeProcessor(node.attributes?.main)}</>
+      </main>
     </>
   );
 }

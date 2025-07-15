@@ -4,7 +4,7 @@ import image from "./types/image.jsx";
 import page from "./types/page.jsx";
 import text from "./types/text.jsx";
 import markdown from "./types/markdown.jsx";
-import gridColumn from "./types/gridColumn.jsx";
+import gridItem from "./types/gridItem.jsx";
 import grid from "./types/grid.jsx";
 import box from "./types/box.jsx";
 
@@ -76,10 +76,10 @@ export function typeProcessor(data) {
     case "box": {
       return box.render(data, { typeProcessor });
     }
-    case "grid-column": {
-      return gridColumn.render(data, { typeProcessor });
+    case "grid-item": {
+      return gridItem.render(data, { typeProcessor });
     }
-    case "mediaItems": {
+    case "media-items": {
       return mediaItems.render(data);
     }
     case "image": {

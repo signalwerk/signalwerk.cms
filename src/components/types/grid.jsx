@@ -1,12 +1,15 @@
 import React from "react";
 
-export function grid(data, { typeProcessor }) {
+export function grid(node, { typeProcessor }) {
   return (
     <>
-      <div className={`node-grid ${data.class || ""}`}>
-        {data?.children?.map((item, index) => (
-          <>{typeProcessor({ type: "grid-column", ...item })}</>
-        ))}
+      <div
+        className={`node-grid ${node.attributes?.class || ""}`}
+        style={{ "--node-grid--columns": node.attributes?.columns || 12 }}
+      >
+        <>
+          {node.attributes?.content && typeProcessor(node.attributes?.content)}
+        </>
       </div>
     </>
   );
