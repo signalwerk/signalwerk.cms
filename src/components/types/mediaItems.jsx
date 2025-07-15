@@ -14,3 +14,5 @@ export function mediaItems(node) {
     </>
   );
 }
+
+mediaItems.type = "media-items";

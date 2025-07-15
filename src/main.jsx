@@ -3,6 +3,12 @@ import ReactDOM from "react-dom/client";
 import { typeProcessor } from "./components/index.jsx";
 import "./style.css";
 
+import { registerComponents } from "./components/index.jsx";
+
+import config from "../cms.config.jsx";
+
+registerComponents(config);
+
 function App() {
   const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);

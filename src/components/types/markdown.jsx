@@ -11,3 +11,5 @@ export function markdown(node) {
 
   return <div className={`node-markdown ${node.class || ""}`}>{content}</div>;
 }
+
+markdown.type = "markdown";

@@ -1,12 +1,30 @@
-import React from "react";
-import { mediaItems } from "./types/mediaItems.jsx";
-import { image } from "./types/image.jsx";
-import { page } from "./types/page.jsx";
-import { text } from "./types/text.jsx";
-import { markdown } from "./types/markdown.jsx";
-import { gridColumn } from "./types/gridColumn.jsx";
-import { grid } from "./types/grid.jsx";
-import { box } from "./types/box.jsx";
+// Registry to store components by their type
+export const componentRegistry = new Map();
+
+export function registerComponent(component) {
+  if (!component || !component.type) {
+    console.warn(
+      "Attempted to register a component without a type:",
+      component,
+    );
+    return;
+  }
+
+  if (componentRegistry.has(component.type)) {
+    console.warn(
+      `Component type '${component.type}' is already registered. Overriding.`,
+    );
+  }
+
+  componentRegistry.set(component.type, component);
+  console.log(`Registered component: ${component.type}`);
+}
+
+export function registerComponents(config) {
+  for (const [name, component] of Object.entries(config.components)) {
+    registerComponent(component);
+  }
+}
 
 export function typeProcessor(data) {
   if (!data) return null;
@@ -16,80 +34,29 @@ export function typeProcessor(data) {
     return data.map((item) => typeProcessor(item));
   }
 
-  switch (data.type) {
-    case "page": {
-      return page(data, { typeProcessor });
-    }
-    case "text": {
-      return <>{text(data)}</>;
-    }
-    case "grid": {
-      return <>{grid(data, { typeProcessor })}</>;
-    }
-    case "box": {
-      return <>{box(data, { typeProcessor })}</>;
-    }
-    case "grid-column": {
-      return gridColumn(data, { typeProcessor });
-    }
-    case "mediaItems": {
-      return mediaItems(data);
-    }
-    case "image": {
-      return image(data);
-    }
-    case "markdown": {
-      return markdown(data);
-    }
-    case "overview": {
+  if (componentRegistry.has(data.type)) {
+    const component = componentRegistry.get(data.type);
+    if (typeof component === "function") {
+      return component(data, { typeProcessor });
+    } else {
+      console.warn(
+        `Component for type '${data.type}' is not a function:`,
+        component,
+      );
       return (
-        <div className="overview">
-          <h1>{data.title || `${data.collection} Overview`}</h1>
-          {data.description && (
-            <div className="overview-description">
-              {typeProcessor({ type: "text", body: data.description })}
-            </div>
-          )}
-
-          <div className="overview-items">
-            {data.items && data.items.length > 0 ? (
-              data.items
-                .filter((item) => !item.draft) // Filter out draft items
-                .map((item, index) => (
-                  <article
-                    key={item.filename || index}
-                    className="overview-item"
-                  >
-                    <h2>
-                      <a href={`/${item.filename}`}>{item.title}</a>
-                    </h2>
-                    {item.date && (
-                      <time className="overview-date">
-                        {new Date(parseInt(item.date)).toLocaleDateString()}
-                      </time>
-                    )}
-                    {item.excerpt && (
-                      <p className="overview-excerpt">{item.excerpt}</p>
-                    )}
-                  </article>
-                ))
-            ) : (
-              <p className="overview-empty">
-                No items found in this collection.
-              </p>
-            )}
-          </div>
+        <div>
+          <p>!!! ERROR Component for type '{data.type}' is not a function.</p>
+          <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
       );
     }
-
-    default:
-      console.warn("Unsupported data type: ", data.type);
-      return (
-        <>
-          <p>!!! ERROR Unsupported data type: {data.type}</p>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </>
-      );
   }
+  return (
+    <div>
+      <p>!!! ERROR Component for type '{data.type}' is not registered.</p>
+      <p>Available types: {Array.from(componentRegistry.keys()).join(", ")}</p>
+      <p>Data:</p>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
+  );
 }

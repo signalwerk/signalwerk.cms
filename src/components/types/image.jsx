@@ -33,3 +33,5 @@ export function image(node, { alt } = {}) {
     </div>
   );
 }
+
+image.type = "image";

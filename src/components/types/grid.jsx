@@ -12,3 +12,5 @@ export function grid(data, { typeProcessor }) {
     </>
   );
 }
+
+grid.type = "grid";

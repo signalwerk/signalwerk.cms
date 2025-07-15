@@ -26,3 +26,5 @@ export function page(node, { typeProcessor }) {
     </>
   );
 }
+
+page.type = "page";

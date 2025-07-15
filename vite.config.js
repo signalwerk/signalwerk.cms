@@ -5,10 +5,31 @@ import path from "path";
 import chokidar from "chokidar";
 import { glob } from "glob";
 import {
-  generateStaticHTML,
   processPageFile,
   BuildError,
 } from "./src/processor/generateStaticHTML.js";
+
+import { registerComponents } from "./src/components/index.jsx";
+
+import config from "./cms.config.jsx";
+registerComponents(config);
+
+// workaround
+// https://stackblitz.com/edit/vitejs-vite-nyt762?file=vite.config.ts
+// see https://github.com/vitejs/vite/issues/15926
+
+// const modules = import.meta.glob("src/components/types/*.jsx", { eager: true });
+
+// // Find all .jsx files
+// const files = await glob("src/components/types/*.jsx");
+
+// // Dynamically import each file (ESM)
+// const modules = await Promise.all(
+//   files.map(async (file) => {
+//     const modulePath = path.resolve(file);
+//     return import(modulePath);
+//   }),
+// );
 
 async function processAllPages() {
   const pageFiles = await glob("collections/**/*.json");
@@ -46,7 +67,7 @@ async function processAllPages() {
 
   // Copy CSS
   try {
-    await fs.copy("src/style.css", "dist/style.css");
+    // await fs.copy("src/style.css", "dist/style.css");
     console.log("✅ Copied CSS file to dist/");
   } catch (cssError) {
     const buildError = new BuildError(
@@ -237,6 +258,7 @@ function pagesPlugin() {
 export default defineConfig({
   plugins: [react(), pagesPlugin()],
   build: {
+    // assetsInlineLimit: 0,
     outDir: "dist",
     emptyOutDir: false,
     sourcemap: true, // Enable source maps for better debugging
