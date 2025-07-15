@@ -3,7 +3,7 @@ import { text } from "./text.jsx";
 
 export function image(node, { alt } = {}) {
   if (!node) return null;
-  
+
   // Handle missing path or filename
   let imageSrc = node.path;
   if (!imageSrc && node.filename) {
@@ -12,17 +12,21 @@ export function image(node, { alt } = {}) {
   }
   if (!imageSrc) {
     // Fallback to placeholder
-    imageSrc = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(node.caption || 'Image')}`;
+    imageSrc = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(
+      node.caption || "Image",
+    )}`;
   }
-  
+
   return (
     <div className={`node-image ${node.class || ""}`}>
-      <img 
-        src={imageSrc} 
+      <img
+        src={imageSrc}
         alt={node.alt || node.caption || alt || "picture"}
         onError={(e) => {
           // Fallback to placeholder if image fails to load
-          e.target.src = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent('Image not found')}`;
+          e.target.src = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(
+            "Image not found",
+          )}`;
         }}
       />
       {node.caption && (
@@ -34,4 +38,7 @@ export function image(node, { alt } = {}) {
   );
 }
 
-image.type = "image";
+export default {
+  type: "image",
+  render: image,
+};

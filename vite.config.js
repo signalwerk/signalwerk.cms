@@ -160,8 +160,9 @@ function pagesPlugin() {
 
           if (resolvedPath) {
             const data = await fs.readJson(resolvedPath);
+            const response = { data };
             res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify(data));
+            res.end(JSON.stringify(response));
           } else {
             res.statusCode = 404;
             res.end(JSON.stringify({ error: "Page not found" }));

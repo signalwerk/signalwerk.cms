@@ -16,4 +16,7 @@ export function gridColumn(data, { typeProcessor }) {
   );
 }
 
-gridColumn.type = "grid-column";
+export default {
+  type: "grid-column",
+  render: gridColumn,
+};

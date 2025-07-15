@@ -15,10 +15,7 @@ export function overview(data, { typeProcessor }) {
           data.items
             .filter((item) => !item.draft) // Filter out draft items
             .map((item, index) => (
-              <article
-                key={item.filename || index}
-                className="overview-item"
-              >
+              <article key={item.filename || index} className="overview-item">
                 <h2>
                   <a href={`/${item.filename}`}>{item.title}</a>
                 </h2>
@@ -33,13 +30,14 @@ export function overview(data, { typeProcessor }) {
               </article>
             ))
         ) : (
-          <p className="overview-empty">
-            No items found in this collection.
-          </p>
+          <p className="overview-empty">No items found in this collection.</p>
         )}
       </div>
     </div>
   );
 }
 
-overview.type = "overview";
+export default {
+  type: "overview",
+  render: overview,
+};

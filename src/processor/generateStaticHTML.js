@@ -79,9 +79,6 @@ export async function generateStaticHTML(processedData, filePath = "unknown") {
 </head>
 <body>
     <div id="root">${appHtml}</div>
-    <script>
-        console.log('Static page loaded: ${processedData.title || "Untitled"}');
-    </script>
 </body>
 </html>`;
   } catch (error) {

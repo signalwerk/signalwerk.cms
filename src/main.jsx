@@ -24,7 +24,7 @@ function App() {
           const response = await fetch(`/api/${path}.json`);
           if (response.ok) {
             const data = await response.json();
-            setPageData(data);
+            setPageData(data.data);
           } else {
             throw new Error(`Page "${path}" not found: ${response.status}`);
           }

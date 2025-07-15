@@ -27,4 +27,7 @@ export function page(node, { typeProcessor }) {
   );
 }
 
-page.type = "page";
+export default {
+  type: "page",
+  render: page,
+};

@@ -18,4 +18,7 @@ export function box(node, { typeProcessor }) {
   );
 }
 
-box.type = "box";
+export default {
+  type: "box",
+  render: box,
+};

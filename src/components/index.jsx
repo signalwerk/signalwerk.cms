@@ -1,3 +1,13 @@
+import React from "react";
+import mediaItems from "./types/mediaItems.jsx";
+import image from "./types/image.jsx";
+import page from "./types/page.jsx";
+import text from "./types/text.jsx";
+import markdown from "./types/markdown.jsx";
+import gridColumn from "./types/gridColumn.jsx";
+import grid from "./types/grid.jsx";
+import box from "./types/box.jsx";
+
 // Registry to store components by their type
 export const componentRegistry = new Map();
 
@@ -36,12 +46,13 @@ export function typeProcessor(data) {
 
   if (componentRegistry.has(data.type)) {
     const component = componentRegistry.get(data.type);
-    if (typeof component === "function") {
-      return component(data, { typeProcessor });
+    if (typeof component.render === "function") {
+      console.log("now rendering component:", data.type);
+      return component.render(data, { typeProcessor });
     } else {
       console.warn(
         `Component for type '${data.type}' is not a function:`,
-        component,
+        component.render,
       );
       return (
         <div>
@@ -51,6 +62,34 @@ export function typeProcessor(data) {
       );
     }
   }
+
+  switch (data.type) {
+    case "page": {
+      return page.render(data, { typeProcessor });
+    }
+    case "text": {
+      return text.render(data);
+    }
+    case "grid": {
+      return grid.render(data, { typeProcessor });
+    }
+    case "box": {
+      return box.render(data, { typeProcessor });
+    }
+    case "grid-column": {
+      return gridColumn.render(data, { typeProcessor });
+    }
+    case "mediaItems": {
+      return mediaItems.render(data);
+    }
+    case "image": {
+      return image.render(data);
+    }
+    case "markdown": {
+      return markdown.render(data);
+    }
+  }
+
   return (
     <div>
       <p>!!! ERROR Component for type '{data.type}' is not registered.</p>

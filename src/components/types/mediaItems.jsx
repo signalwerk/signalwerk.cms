@@ -15,4 +15,7 @@ export function mediaItems(node) {
   );
 }
 
-mediaItems.type = "media-items";
+export default {
+  type: "media-items",
+  render: mediaItems,
+};
