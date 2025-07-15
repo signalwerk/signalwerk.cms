@@ -53,21 +53,8 @@ async function processAllPages() {
   }
 
   // Copy CSS
-  try {
-    await fs.copy("src/style.css", "dist/style.css");
-    console.log("✅ Copied CSS file to dist/");
-  } catch (cssError) {
-    const buildError = new BuildError(
-      `Failed to copy CSS file`,
-      "src/style.css",
-      cssError,
-      "Asset Copying",
-    );
-    errors.push({
-      filePath: "src/style.css",
-      error: buildError,
-    });
-  }
+  // Note: CSS is now processed by Vite through the entry file import
+  // No manual copying needed
 
   // If there were any errors, report them all and throw
   if (errors.length > 0) {
@@ -121,27 +108,33 @@ function pagesOnlyPlugin() {
 export default defineConfig({
   plugins: [react(), pagesOnlyPlugin()],
   build: {
-    // Don't actually build anything - we just want the plugins to run
-    ssr: true,
     outDir: "dist",
     emptyOutDir: false,
-    write: false, // Don't write any Vite build output
     rollupOptions: {
-      // Use a minimal entry point
+      // Use a minimal entry point that imports CSS
       input: "pages-only-entry.js",
-      external: (id) => {
-        // Don't mark the entry file as external, but mark everything else
-        return (
-          id !== "pages-only-entry.js" &&
-          !id.startsWith("/") &&
-          !id.startsWith("./")
-        );
+      output: {
+        // Only output CSS, skip JS bundle
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
+            return "assets/styles.css";
+          }
+          return assetInfo.name || "assets/[name].[ext]";
+        },
+        entryFileNames: () => {
+          // We don't want the JS bundle, but Vite requires this
+          return "empty.js";
+        },
       },
-    },
-  },
-  resolve: {
-    alias: {
-      "@": "/src",
+      //   external: (id) => {
+      //     // Don't mark the entry file or CSS as external
+      //     return (
+      //       id !== "pages-only-entry.js" &&
+      //       !id.endsWith(".css") &&
+      //       !id.startsWith("/") &&
+      //       !id.startsWith("./")
+      //     );
+      //   },
     },
   },
 });

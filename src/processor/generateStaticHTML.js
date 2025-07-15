@@ -75,7 +75,7 @@ export async function generateStaticHTML(processedData, filePath = "unknown") {
     ${helmet.title.toString()}
     ${helmet.meta.toString()}
     ${helmet.link.toString()}
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
     <div id="root">${appHtml}</div>
