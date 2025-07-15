@@ -20,4 +20,8 @@ export default {
     // box,
     overview,
   },
+  content: {
+    base: "pages",
+    pattern: "**/*.json",
+  },
 };

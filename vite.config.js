@@ -12,6 +12,11 @@ import {
 import { registerComponents } from "./src/components/index.jsx";
 
 import config from "./cms.config.jsx";
+
+const BASE_DIR = config.content.base || "pages";
+const PATTERN = config.content.pattern || "**/*.json";
+const PAGE_FILES_PATTERN = `${BASE_DIR}/${PATTERN}`;
+
 registerComponents(config);
 
 // workaround
@@ -32,7 +37,7 @@ registerComponents(config);
 // );
 
 async function processAllPages() {
-  const pageFiles = await glob("collections/**/*.json");
+  const pageFiles = await glob(PAGE_FILES_PATTERN);
   console.log(`📄 Found ${pageFiles.length} page files to process`);
 
   if (pageFiles.length === 0) {
@@ -134,7 +139,7 @@ async function resolveApiPath(requestUrl) {
 
   // Try each path variation
   for (const pathVariant of pathsToTry) {
-    const fullPath = path.join("collections", pathVariant);
+    const fullPath = path.join(BASE_DIR, pathVariant);
     try {
       if (await fs.pathExists(fullPath)) {
         return fullPath;
@@ -178,7 +183,7 @@ function pagesPlugin() {
       });
 
       // Watch for changes
-      const watcher = chokidar.watch("collections/**/*.json", {
+      const watcher = chokidar.watch(PAGE_FILES_PATTERN, {
         ignored: /node_modules/,
         persistent: true,
       });
@@ -285,7 +290,7 @@ export default defineConfig({
     port: 3000,
     open: true,
     fs: {
-      allow: ["..", "dist", "collections"],
+      allow: ["..", "dist", BASE_DIR],
     },
   },
   resolve: {
