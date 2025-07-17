@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run clean && npm run build:pages",
+    "migrate": "node pages/migrate.js",
     "build--old": "npm run clean && vite build",
     "build:pages": "vite build --config vite.config.pages.js",
     "clean": "rm -rf dist/**"
@@ -43,6 +44,7 @@
     "chokidar": "^3.5.3",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10",
+    "sass-embedded": "^1.89.2",
     "vite": "^7.0.4"
   }
 }

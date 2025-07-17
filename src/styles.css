@@ -74,29 +74,29 @@ body {
   margin-bottom: 2rem;
 }
 
-.node-grid-column {
-  grid-column: span var(--node-grid-column--count, 12);
+.node-grid-item {
+  grid-column: span var(--node-grid-item--column-span, 12);
 }
 
 /* Box components */
-.nodebox {
+.node-box {
   margin-bottom: 2rem;
   padding: 1.5rem;
   border-radius: 8px;
 }
 
-.nodebox--default {
+.node-box--default {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
 }
 
-.nodebox--expample {
+.node-box--expample {
   background-color: #fff3cd;
   border: 1px solid #ffeaa7;
   border-left: 4px solid #fdcb6e;
 }
 
-.nodebox h4 {
+.node-box h4 {
   margin-top: 0;
   color: #856404;
 }
@@ -160,7 +160,7 @@ body {
     gap: 1rem;
   }
   
-  .node-grid-column {
+  .node-grid-item {
     grid-column: span 1;
   }
 }

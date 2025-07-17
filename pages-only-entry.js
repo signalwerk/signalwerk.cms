@@ -3,6 +3,6 @@
 // The actual page processing happens in the plugin's buildStart hook
 
 // Import CSS so Vite can process it
-import "./src/styles.css";
+import "./styles/style.scss";
 
 // console.log("Pages-only build entry");

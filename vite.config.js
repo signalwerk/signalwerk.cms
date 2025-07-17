@@ -4,6 +4,8 @@ import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
 import { glob } from "glob";
+import { processAllPages } from "./processAllPages.js"; // Import the function to process all pages
+
 import {
   processPageFile,
   BuildError,
@@ -133,22 +135,27 @@ function pagesPlugin() {
 
       // Process all pages on startup
       console.log("🚀 Processing all pages on server start...");
-      processAllPages().catch((error) => {
-        console.error("\n🚨 Failed to process pages on server startup:");
-        if (error instanceof BuildError) {
-          console.error(error.toString());
-        } else {
-          console.error(error);
-        }
-        // In dev mode, continue despite errors
-      });
+      processAllPages({ pattern: PAGE_FILES_PATTERN, baseDir: BASE_DIR }).catch(
+        (error) => {
+          console.error("\n🚨 Failed to process pages on server startup:");
+          if (error instanceof BuildError) {
+            console.error(error.toString());
+          } else {
+            console.error(error);
+          }
+          // In dev mode, continue despite errors
+        },
+      );
     },
 
     async buildStart() {
       console.log("🔨 Building all pages for production...");
 
       try {
-        await processAllPages();
+        await processAllPages({
+          pattern: PAGE_FILES_PATTERN,
+          baseDir: BASE_DIR,
+        });
         console.log("🎉 All pages built successfully for production!");
       } catch (error) {
         console.error("\n💀 PRODUCTION BUILD FAILED:");

@@ -19,16 +19,7 @@ export function image(node, { alt } = {}) {
 
   return (
     <div className={`node-image ${node.class || ""}`}>
-      <img
-        src={imageSrc}
-        alt={node.alt || node.caption || alt || "picture"}
-        onError={(e) => {
-          // Fallback to placeholder if image fails to load
-          e.target.src = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(
-            "Image not found",
-          )}`;
-        }}
-      />
+      <img src={imageSrc} alt={node.alt || node.caption || alt || "picture"} />
       {node.caption && (
         <div className="node-image__caption">
           {text({ body: node.caption })}
