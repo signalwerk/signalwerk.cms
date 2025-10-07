@@ -1,28 +1,31 @@
 import React from "react";
-import { text } from "./text.jsx";
+import { markdown } from "./markdown.jsx";
 
-export function image(node, { alt } = {}) {
-  if (!node) return null;
+export function image(node) {
+  if (!(node && node?.attributes)) return null;
 
-  // Handle missing path or filename
-  let imageSrc = node.path;
-  if (!imageSrc && node.filename) {
-    // Construct path from filename if path is missing
-    imageSrc = `/images/${node.filename}`;
+  const { configuration, hash, filename, caption, alt } = node.attributes;
+
+  const config = [];
+  if (configuration) {
+    config.push(configuration);
   }
-  if (!imageSrc) {
-    // Fallback to placeholder
-    imageSrc = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(
-      node.caption || "Image",
-    )}`;
-  }
+
+  config.push("resize@width:1500;");
+
+  const path = [
+    "./assets/media",
+    hash,
+    config.join(""),
+    `${filename}.jpg`,
+  ].join("/");
 
   return (
     <div className={`node-image ${node.class || ""}`}>
-      <img src={imageSrc} alt={node.alt || node.caption || alt || "picture"} />
-      {node.caption && (
+      <img src={path} alt={alt || caption || "picture"} />
+      {caption && (
         <div className="node-image__caption">
-          {text({ body: node.caption })}
+          {markdown({ attributes: { content: caption } })}
         </div>
       )}
     </div>

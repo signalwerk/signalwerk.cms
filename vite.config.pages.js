@@ -47,6 +47,7 @@ function pagesOnlyPlugin() {
 
 export default defineConfig({
   plugins: [react(), pagesOnlyPlugin()],
+  publicDir: "public", // Copy public folder during build
   build: {
     outDir: "dist",
     emptyOutDir: false,

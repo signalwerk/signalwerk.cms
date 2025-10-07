@@ -1,18 +1,35 @@
 import React from "react";
 import { renderNode } from "../../../packages/signalwerk.md/src/render.jsx";
-import { mdToAstSync } from "../../../packages/signalwerk.md/src/index.js";
+import {
+  mdToAstSync,
+  mdToHtmlSync,
+} from "../../../packages/signalwerk.md/src/index.js";
+
+import {
+  htmlProcessor,
+  astProcessor,
+} from "../../../packages/signalwerk.md/src/processor.js";
+
+import { toHtml } from "hast-util-to-html";
+const processor = astProcessor();
 
 export function markdown(node) {
   if (!node) return null;
 
-  const { ast } = mdToAstSync(node.attributes?.content);
+  // const { html } = mdToHtmlSync(node.attributes?.content);
+  // const { ast } = mdToAstSync("## test");
 
-  const content = renderNode(ast);
+  const mdast = processor.parse(node.attributes?.content); // Parse to MDAST
+  const hast = processor.runSync(mdast); // Transform MDAST → HAST
+  const html = toHtml(hast); // Transform HAST → HTML
 
   return (
-    <div className={`node-markdown ${node.attributes?.class || ""}`}>
-      {content}
-    </div>
+    <div
+      className="node-markdown"
+      dangerouslySetInnerHTML={{
+        __html: html,
+      }}
+    />
   );
 }
 

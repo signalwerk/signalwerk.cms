@@ -177,6 +177,7 @@ function pagesPlugin() {
 
 export default defineConfig({
   plugins: [react(), pagesPlugin()],
+  publicDir: "public", // Serve public folder during dev and copy during build
   build: {
     outDir: "dist",
     emptyOutDir: false,
