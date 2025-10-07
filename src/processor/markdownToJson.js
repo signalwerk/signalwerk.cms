@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { mdToAstSync } from "../../../signalwerk.md/src/index.js";
+import { extractFrontmatter } from "../../../signalwerk.md/src/processor.js";
 
 /**
  * Converts a markdown file to the JSON page structure
@@ -11,33 +11,37 @@ export async function markdownToJson(filePath) {
   const content = await fs.readFile(filePath, "utf-8");
   const filename = path.basename(filePath, ".md");
   
-  // Extract frontmatter-like metadata if present
-  // For now, we'll create a basic structure
+  // Extract frontmatter and body
+  const { attributes: frontmatter, body } = extractFrontmatter(content);
+  
+  // Get file stats for default date
   const stats = await fs.stat(filePath);
-  const date = stats.mtime.getTime().toString();
+  const defaultDate = stats.mtime.getTime().toString();
   
   // Extract title from filename (convert hyphens to spaces and capitalize)
-  const title = filename
+  const defaultTitle = filename
     .split("-")
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
   
   // Generate path from filename
-  const pagePath = `/${filename}/`;
+  const defaultPath = `/${filename}/`;
   
   return {
     type: "page",
     attributes: {
-      draft: false,
-      lang: "en",
-      path: pagePath,
-      date: date,
-      title: title,
+      // Use frontmatter values with fallbacks
+      draft: frontmatter.draft ?? false,
+      lang: frontmatter.lang ?? "en",
+      path: frontmatter.path ?? defaultPath,
+      date: frontmatter.date ?? defaultDate,
+      title: frontmatter.title ?? defaultTitle,
+      class: frontmatter.class ?? undefined,
       main: [
         {
           type: "markdown",
           attributes: {
-            content: content.trim()
+            content: body.trim()
           }
         }
       ]
