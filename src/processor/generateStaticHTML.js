@@ -4,6 +4,7 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 import { Helmet } from "react-helmet";
 import { typeProcessor } from "../components/index.jsx";
+import { markdownToJson } from "./markdownToJson.js";
 
 // Enhanced error class for better error reporting
 class BuildError extends Error {
@@ -101,16 +102,40 @@ export async function processPageFile(filePath, { baseDir }) {
   console.log(`🔄 Processing: ${filePath}`);
 
   try {
-    // Read and validate JSON file
+    const fileExtension = path.extname(filePath);
     let pageData;
-    try {
-      pageData = await fs.readJson(filePath);
-    } catch (jsonError) {
+
+    // Handle different file types
+    if (fileExtension === ".md") {
+      // Convert markdown to JSON structure
+      try {
+        pageData = await markdownToJson(filePath);
+      } catch (mdError) {
+        throw new BuildError(
+          `Failed to convert markdown file to JSON structure`,
+          filePath,
+          mdError,
+          "Markdown Conversion",
+        );
+      }
+    } else if (fileExtension === ".json") {
+      // Read and validate JSON file
+      try {
+        pageData = await fs.readJson(filePath);
+      } catch (jsonError) {
+        throw new BuildError(
+          `Failed to read or parse JSON file`,
+          filePath,
+          jsonError,
+          "JSON Parsing",
+        );
+      }
+    } else {
       throw new BuildError(
-        `Failed to read or parse JSON file`,
+        `Unsupported file type: ${fileExtension}. Only .json and .md files are supported.`,
         filePath,
-        jsonError,
-        "JSON Parsing",
+        null,
+        "File Type Validation",
       );
     }
 
@@ -124,7 +149,7 @@ export async function processPageFile(filePath, { baseDir }) {
       );
     }
 
-    const filename = path.basename(filePath, ".json");
+    const filename = path.basename(filePath, fileExtension);
 
     // Get the relative directory structure from the source file
     const relativePath = path.relative(baseDir, filePath);
