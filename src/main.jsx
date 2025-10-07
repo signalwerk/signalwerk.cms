@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { typeProcessor } from "./components/index.jsx";
-import "../styles/style.scss";
+// import "../styles/style.scss";
 
 import { registerComponents } from "./components/index.jsx";
 

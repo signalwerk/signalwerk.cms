@@ -1,14 +1,14 @@
 import React from "react";
-import { renderNode } from "../../../packages/signalwerk.md/src/render.jsx";
+import { renderNode } from "../../../../signalwerk.md/src/render.jsx";
 import {
   mdToAstSync,
   mdToHtmlSync,
-} from "../../../packages/signalwerk.md/src/index.js";
+} from "../../../../signalwerk.md/src/index.js";
 
 import {
   htmlProcessor,
   astProcessor,
-} from "../../../packages/signalwerk.md/src/processor.js";
+} from "../../../../signalwerk.md/src/processor.js";
 
 import { toHtml } from "hast-util-to-html";
 const processor = astProcessor();
