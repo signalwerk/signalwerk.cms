@@ -13,15 +13,13 @@ function App() {
     const loadPageData = async () => {
       try {
         const path = window.location.pathname;
-        // remove trailing slash
-        const cleanPath =
-          path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
+        
 
         // if path is empty, set to index
-        const finalPath = cleanPath === "/" ? "index" : cleanPath;
+        const finalPath = path === "/" ? "index.json" : `${path}/index.json`;
 
         if (finalPath) {
-          const response = await fetch(`/api/${finalPath}.json`);
+          const response = await fetch(`/api/${finalPath}`);
           if (response.ok) {
             const data = await response.json();
             setPageData(data.data);
