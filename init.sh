@@ -16,3 +16,6 @@ cp ./packages/signalwerk.cms/pages/test-page.json ./pages/
 cp ./packages/signalwerk.cms/pages/index.md ./pages/
 
 mkdir public
+cp -r ./packages/signalwerk.cms/public . 
+
+mkdir public
