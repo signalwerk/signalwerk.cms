@@ -1,12 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
 import { glob } from "glob";
-import {
-  processPageFile,
-  BuildError,
-} from "./src/processor/generateStaticHTML.js";
+import { processPageFile, BuildError } from "./generateStaticHTML.js";
 
-export async function processAllPages({pattern, baseDir}) {
+export async function processAllPages({ pattern, baseDir }) {
   console.log(`🔍 Searching for page files matching pattern: ${pattern}`);
   const pageFiles = await glob(pattern);
   console.log(`📄 Found ${pageFiles.length} page files to process`);
