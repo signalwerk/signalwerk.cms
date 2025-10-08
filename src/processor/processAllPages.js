@@ -4,9 +4,18 @@ import { glob } from "glob";
 import { processPageFile, BuildError } from "./generateStaticHTML.js";
 
 export async function processAllPages({ pattern, baseDir }) {
-  console.log(`🔍 Searching for page files matching pattern: ${pattern}`);
-  const pageFiles = await glob(pattern);
+  const globPattern = `${baseDir}/${pattern}`;
+  console.log(`🔍 [processAllPages] baseDir="${baseDir}", pattern="${pattern}"`);
+  console.log(`🔍 [processAllPages] Searching for page files matching: ${globPattern}`);
+  
+  const pageFiles = await glob(globPattern, {
+    ignore: ['**/node_modules/**']
+  });
+  
   console.log(`📄 Found ${pageFiles.length} page files to process`);
+  if (pageFiles.length > 0) {
+    console.log(`🔍 [processAllPages] Files found:`, pageFiles);
+  }
 
   if (pageFiles.length === 0) {
     console.warn("⚠️  No page files found to process");
