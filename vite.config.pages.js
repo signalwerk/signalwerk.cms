@@ -13,37 +13,7 @@ const BASE_DIR = config.content.base || "pages";
 const PATTERN = config.content.pattern || "**/*.json";
 const PAGE_FILES_PATTERN = `${BASE_DIR}/${PATTERN}`;
 
-// Plugin that only processes pages without building the main app
-function pagesOnlyPlugin() {
-  return {
-    name: "pages-only-plugin",
-    async buildStart() {
-      console.log("🔨 Building pages only...");
 
-      try {
-        await processAllPages({
-          pattern: PAGE_FILES_PATTERN,
-          baseDir: BASE_DIR,
-          components,
-        });
-        console.log("🎉 All pages built successfully!");
-      } catch (error) {
-        console.error("\n💀 PAGE BUILD FAILED:");
-
-        if (error instanceof BuildError) {
-          console.error(error.toString());
-        } else {
-          console.error("Unexpected build error:", error);
-        }
-
-        console.error("\n🛑 Build process terminated due to errors.\n");
-
-        // This will cause the build to fail
-        throw error;
-      }
-    },
-  };
-}
 
 export default defineConfig({
   plugins: [react(), pagesOnlyPlugin()],

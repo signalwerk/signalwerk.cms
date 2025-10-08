@@ -9,5 +9,10 @@ cp ./packages/signalwerk.cms/vite.config.js .
 cp ./packages/signalwerk.cms/package.json . 
 cp ./packages/signalwerk.cms/.gitignore . 
 cp ./packages/signalwerk.cms/index.html . 
+cp ./packages/signalwerk.cms/build-entry.js .
 
 mkdir pages
+cp ./packages/signalwerk.cms/pages/test-page.json ./pages/
+cp ./packages/signalwerk.cms/pages/index.md ./pages/
+
+mkdir public

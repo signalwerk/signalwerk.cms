@@ -59,8 +59,38 @@ async function resolveApiPath({ requestUrl, baseDir }) {
   return null;
 }
 
+/**
+ * Creates virtual module handlers for cms-components
+ * This is shared between pagesPlugin and pagesOnlyPlugin
+ */
+function createVirtualModuleHandlers() {
+  return {
+    // Resolve virtual module imports
+    resolveId(id) {
+      if (id === "virtual:cms-components") {
+        return "\0virtual:cms-components";
+      }
+    },
+
+    // Load the virtual module with component registry
+    load(id) {
+      if (id === "\0virtual:cms-components") {
+        // Import from the cms.config.jsx and destructure components
+        return /* javascript */ `
+import config from '/cms.config.jsx';
+
+// Create a Map from the config components
+export const componentsMap = new Map(
+  Object.entries(config.components).map(([key, value]) => [value.type, value])
+);
+`;
+      }
+    },
+  };
+}
+
 // Plugin that only processes pages without building the main app
-function pagesOnlyPlugin({
+export function pagesOnlyPlugin({
   baseDir = "pages",
   pattern = "**/*.json",
   components = null,
@@ -70,8 +100,15 @@ function pagesOnlyPlugin({
     ? components 
     : new Map(Object.entries(components).map(([key, value]) => [value.type, value]));
 
+  const virtualModuleHandlers = createVirtualModuleHandlers();
+
   return {
     name: "pages-only-plugin",
+
+    // Use shared virtual module handlers
+    resolveId: virtualModuleHandlers.resolveId,
+    load: virtualModuleHandlers.load,
+
     async buildStart() {
       console.log("🔨 Building pages only...");
 
@@ -116,38 +153,14 @@ export function pagesPlugin({
     ? components 
     : new Map(Object.entries(components).map(([key, value]) => [value.type, value]));
 
+  const virtualModuleHandlers = createVirtualModuleHandlers();
+
   return {
     name: "pages-plugin",
 
-    // Resolve virtual module imports
-    resolveId(id) {
-      if (id === "virtual:cms-components") {
-        return "\0virtual:cms-components";
-      }
-    },
-
-    // Load the virtual module with component registry
-    load(id) {
-      if (id === "\0virtual:cms-components") {
-        // Build the component map by re-exporting from the config
-        // Since componentsMap is already a Map, we serialize it for the browser
-        const mapEntries = Array.from(componentsMap.entries())
-          .map(([type, component], index) => {
-            return `  ['${type}', component_${index}]`;
-          })
-          .join(",\n");
-
-        // Import from the cms.config.jsx and destructure components
-        return /* javascript */ `
-import config from '/cms.config.jsx';
-
-// Create a Map from the config components
-export const componentsMap = new Map(
-  Object.entries(config.components).map(([key, value]) => [value.type, value])
-);
-`;
-      }
-    },
+    // Use shared virtual module handlers
+    resolveId: virtualModuleHandlers.resolveId,
+    load: virtualModuleHandlers.load,
 
     configureServer(server) {
       console.log(
