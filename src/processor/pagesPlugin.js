@@ -26,9 +26,9 @@ async function resolveApiPath({ requestUrl, baseDir }) {
   );
 
   // Normalize path: remove index.html and index.json patterns
-  cleanPath = cleanPath
-    .replace(/\/index\.(html|json)$/, "")
-    .replace(/index\.(html|json)$/, "");
+  // cleanPath = cleanPath
+  //   .replace(/\/index\.(html|json)$/, "")
+  //   .replace(/index\.(html|json)$/, "");
 
   // Remove trailing slash
   if (cleanPath.endsWith("/")) {

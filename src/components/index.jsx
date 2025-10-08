@@ -1,12 +1,4 @@
 import React from "react";
-import mediaItems from "./types/mediaItems.jsx";
-import image from "./types/image.jsx";
-import page from "./types/page.jsx";
-import text from "./types/text.jsx";
-import markdown from "./types/markdown.jsx";
-import gridItem from "./types/gridItem.jsx";
-import grid from "./types/grid.jsx";
-import box from "./types/box.jsx";
 
 // Registry to store components by their type
 export const componentRegistry = new Map();
@@ -60,33 +52,6 @@ export function typeProcessor(data) {
           <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
       );
-    }
-  }
-
-  switch (data.type) {
-    case "page": {
-      return page.render(data, { typeProcessor });
-    }
-    case "text": {
-      return text.render(data);
-    }
-    case "grid": {
-      return grid.render(data, { typeProcessor });
-    }
-    case "box": {
-      return box.render(data, { typeProcessor });
-    }
-    case "grid-item": {
-      return gridItem.render(data, { typeProcessor });
-    }
-    case "media-items": {
-      return mediaItems.render(data);
-    }
-    case "image": {
-      return image.render(data);
-    }
-    case "markdown": {
-      return markdown.render(data);
     }
   }
 

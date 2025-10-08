@@ -5,7 +5,8 @@ import { typeProcessor } from "./components/index.jsx";
 
 import { registerComponents } from "./components/index.jsx";
 
-import config from "../cms.config.jsx";
+// Import config from the project root (3 levels up from src/main.jsx)
+import config from "../../../cms.config.jsx";
 
 registerComponents(config);
 
@@ -22,8 +23,11 @@ function App() {
         // remove trailing slash
         const cleanPath = path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
 
-        if (cleanPath) {
-          const response = await fetch(`/api/${cleanPath}.json`);
+        // if path is empty, set to index
+        const finalPath = cleanPath === "/" ? "index" : cleanPath;
+
+        if (finalPath) {
+          const response = await fetch(`/api/${finalPath}.json`);
           if (response.ok) {
             const data = await response.json();
             setPageData(data.data);
