@@ -25,3 +25,11 @@ npm run build
 ```
 
 This generates static HTML files in the `dist/` folder.
+
+## Development
+
+copy back the current setup to the template repo
+
+```bash
+sh packages/signalwerk.cms/update_template.sh
+```

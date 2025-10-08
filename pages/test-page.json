@@ -1,0 +1,75 @@
+{
+  "type": "page",
+  "attributes": {
+    "draft": false,
+    "lang": "de",
+    "path": "/test-page/",
+    "date": "1705863229986",
+    "title": "Test Page",
+    "class": "hello",
+    "main": [
+      {
+        "type": "text",
+        "attributes": {
+          "content": "most simple text content"
+        }
+      },
+      {
+        "type": "markdown",
+        "attributes": {
+          "content": "## Test Page\n\nThis is a test page to demonstrate the multi-page functionality of the CMS system.\n\n### Features\n\n- Multiple page support\n- Overview pages for collections\n- Dynamic routing\n- File watching for development\n\n### Content Types\n\nThis page demonstrates various content types available in the system."
+        }
+      },
+      {
+        "type": "box",
+        "attributes": {
+          "class": "example",
+          "content": [
+            {
+              "type": "grid",
+              "attributes": {
+                "columns": 12,
+                "content": [
+                  {
+                    "type": "grid-item",
+                    "attributes": {
+                      "columnSpan": 6,
+                      "content": [
+                        {
+                          "type": "markdown",
+                          "attributes": {
+                            "content": "This is a **grid layout** with multiple columns. The left column contains this text content."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "grid-item",
+                    "attributes": {
+                      "columnSpan": 6,
+                      "content": [
+                        {
+                          "type": "markdown",
+                          "attributes": {
+                            "content": "The right column contains additional content. This demonstrates the flexible layout system."
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "markdown",
+        "attributes": {
+          "content": "### Navigation\n\nYou can navigate between pages using the overview page that lists all available content in the collection.\n\n### Development\n\nThis page will automatically reload when you make changes to the JSON file during development."
+        }
+      }
+    ]
+  }
+}

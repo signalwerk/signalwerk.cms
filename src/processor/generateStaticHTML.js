@@ -42,7 +42,10 @@ class BuildError extends Error {
 }
 
 // Server-side rendering function
-export async function generateStaticHTML(processedData, { filePath = "unknown", components }) {
+export async function generateStaticHTML(
+  processedData,
+  { filePath = "unknown", components },
+) {
   if (!components) {
     throw new BuildError(
       `Components registry is required for rendering`,

@@ -96,9 +96,12 @@ export function pagesOnlyPlugin({
   components = null,
 }) {
   // Convert components object to Map if it's not already a Map
-  const componentsMap = components instanceof Map 
-    ? components 
-    : new Map(Object.entries(components).map(([key, value]) => [value.type, value]));
+  const componentsMap =
+    components instanceof Map
+      ? components
+      : new Map(
+          Object.entries(components).map(([key, value]) => [value.type, value]),
+        );
 
   const virtualModuleHandlers = createVirtualModuleHandlers();
 
@@ -149,9 +152,12 @@ export function pagesPlugin({
   }
 
   // Convert components object to Map if it's not already a Map
-  const componentsMap = components instanceof Map 
-    ? components 
-    : new Map(Object.entries(components).map(([key, value]) => [value.type, value]));
+  const componentsMap =
+    components instanceof Map
+      ? components
+      : new Map(
+          Object.entries(components).map(([key, value]) => [value.type, value]),
+        );
 
   const virtualModuleHandlers = createVirtualModuleHandlers();
 
@@ -230,7 +236,10 @@ export function pagesPlugin({
           `\n📄 [watcher.change] Processing changed file: ${filePath}`,
         );
         try {
-          await processPageFile(filePath, { baseDir, components: componentsMap });
+          await processPageFile(filePath, {
+            baseDir,
+            components: componentsMap,
+          });
           server.ws.send({ type: "full-reload" });
         } catch (error) {
           console.error(
@@ -248,7 +257,10 @@ export function pagesPlugin({
       watcher.on("add", async (filePath) => {
         console.log(`\n📄 [watcher.add] Processing new file: ${filePath}`);
         try {
-          await processPageFile(filePath, { baseDir, components: componentsMap });
+          await processPageFile(filePath, {
+            baseDir,
+            components: componentsMap,
+          });
           server.ws.send({ type: "full-reload" });
         } catch (error) {
           console.error(
@@ -268,15 +280,17 @@ export function pagesPlugin({
       console.log(
         `🔍 [processAllPages] Called with pattern="${pattern}", baseDir="${baseDir}"`,
       );
-      processAllPages({ pattern, baseDir, components: componentsMap }).catch((error) => {
-        console.error("\n🚨 Failed to process pages on server startup:");
-        if (error instanceof BuildError) {
-          console.error(error.toString());
-        } else {
-          console.error(error);
-        }
-        // In dev mode, continue despite errors
-      });
+      processAllPages({ pattern, baseDir, components: componentsMap }).catch(
+        (error) => {
+          console.error("\n🚨 Failed to process pages on server startup:");
+          if (error instanceof BuildError) {
+            console.error(error.toString());
+          } else {
+            console.error(error);
+          }
+          // In dev mode, continue despite errors
+        },
+      );
     },
 
     async buildStart() {
