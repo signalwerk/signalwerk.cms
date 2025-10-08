@@ -3,10 +3,14 @@ import path from "path";
 import { glob } from "glob";
 import { processPageFile, BuildError } from "./generateStaticHTML.js";
 
-export async function processAllPages({ pattern, baseDir }) {
+export async function processAllPages({ pattern, baseDir, components }) {
   const globPattern = `${baseDir}/${pattern}`;
   console.log(`🔍 [processAllPages] baseDir="${baseDir}", pattern="${pattern}"`);
   console.log(`🔍 [processAllPages] Searching for page files matching: ${globPattern}`);
+  
+  if (!components) {
+    throw new Error('processAllPages: components parameter is required');
+  }
   
   const pageFiles = await glob(globPattern, {
     ignore: ['**/node_modules/**']
@@ -28,7 +32,7 @@ export async function processAllPages({ pattern, baseDir }) {
   // Process individual pages and collect both results and errors
   for (const filePath of pageFiles) {
     try {
-      const result = await processPageFile(filePath, { baseDir });
+      const result = await processPageFile(filePath, { baseDir, components });
       if (result) results.push(result);
     } catch (error) {
       // Collect errors but continue processing other files to show all issues

@@ -59,16 +59,96 @@ async function resolveApiPath({ requestUrl, baseDir }) {
   return null;
 }
 
-export function pagesPlugin({ baseDir = "pages", pattern = "**/*.json" }) {
+// Plugin that only processes pages without building the main app
+function pagesOnlyPlugin({
+  baseDir = "pages",
+  pattern = "**/*.json",
+  components = null,
+}) {
+  // Convert components object to Map if it's not already a Map
+  const componentsMap = components instanceof Map 
+    ? components 
+    : new Map(Object.entries(components).map(([key, value]) => [value.type, value]));
+
+  return {
+    name: "pages-only-plugin",
+    async buildStart() {
+      console.log("🔨 Building pages only...");
+
+      try {
+        await processAllPages({ pattern, baseDir, components: componentsMap });
+        console.log("🎉 All pages built successfully!");
+      } catch (error) {
+        console.error("\n💀 PAGE BUILD FAILED:");
+
+        if (error instanceof BuildError) {
+          console.error(error.toString());
+        } else {
+          console.error("Unexpected build error:", error);
+        }
+
+        console.error("\n🛑 Build process terminated due to errors.\n");
+
+        // This will cause the build to fail
+        throw error;
+      }
+    },
+  };
+}
+
+export function pagesPlugin({
+  baseDir = "pages",
+  pattern = "**/*.json",
+  components = null,
+}) {
   if (!baseDir) {
     throw new Error("pagesPlugin: 'baseDir' option is required");
   }
   if (!pattern) {
     throw new Error("pagesPlugin: 'pattern' option is required");
   }
+  if (!components) {
+    throw new Error("pagesPlugin: 'components' option is required");
+  }
+
+  // Convert components object to Map if it's not already a Map
+  const componentsMap = components instanceof Map 
+    ? components 
+    : new Map(Object.entries(components).map(([key, value]) => [value.type, value]));
 
   return {
     name: "pages-plugin",
+
+    // Resolve virtual module imports
+    resolveId(id) {
+      if (id === "virtual:cms-components") {
+        return "\0virtual:cms-components";
+      }
+    },
+
+    // Load the virtual module with component registry
+    load(id) {
+      if (id === "\0virtual:cms-components") {
+        // Build the component map by re-exporting from the config
+        // Since componentsMap is already a Map, we serialize it for the browser
+        const mapEntries = Array.from(componentsMap.entries())
+          .map(([type, component], index) => {
+            return `  ['${type}', component_${index}]`;
+          })
+          .join(",\n");
+
+        // Import from the cms.config.jsx and destructure components
+        return /* javascript */ `
+import config from '/cms.config.jsx';
+
+// Create a Map from the config components
+export const componentsMap = new Map(
+  Object.entries(config.components).map(([key, value]) => [value.type, value])
+);
+`;
+      }
+    },
+
     configureServer(server) {
       console.log(
         `🔍 [pagesPlugin] Configured with baseDir="${baseDir}", pattern="${pattern}"`,
@@ -137,7 +217,7 @@ export function pagesPlugin({ baseDir = "pages", pattern = "**/*.json" }) {
           `\n📄 [watcher.change] Processing changed file: ${filePath}`,
         );
         try {
-          await processPageFile(filePath, { baseDir });
+          await processPageFile(filePath, { baseDir, components: componentsMap });
           server.ws.send({ type: "full-reload" });
         } catch (error) {
           console.error(
@@ -155,7 +235,7 @@ export function pagesPlugin({ baseDir = "pages", pattern = "**/*.json" }) {
       watcher.on("add", async (filePath) => {
         console.log(`\n📄 [watcher.add] Processing new file: ${filePath}`);
         try {
-          await processPageFile(filePath, { baseDir });
+          await processPageFile(filePath, { baseDir, components: componentsMap });
           server.ws.send({ type: "full-reload" });
         } catch (error) {
           console.error(
@@ -175,7 +255,7 @@ export function pagesPlugin({ baseDir = "pages", pattern = "**/*.json" }) {
       console.log(
         `🔍 [processAllPages] Called with pattern="${pattern}", baseDir="${baseDir}"`,
       );
-      processAllPages({ pattern, baseDir }).catch((error) => {
+      processAllPages({ pattern, baseDir, components: componentsMap }).catch((error) => {
         console.error("\n🚨 Failed to process pages on server startup:");
         if (error instanceof BuildError) {
           console.error(error.toString());
@@ -196,6 +276,7 @@ export function pagesPlugin({ baseDir = "pages", pattern = "**/*.json" }) {
         await processAllPages({
           pattern,
           baseDir,
+          components: componentsMap,
         });
         console.log("🎉 All pages built successfully for production!");
       } catch (error) {

@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { typeProcessor } from "./components/index.jsx";
-// import "../styles/style.scss";
-
-import { registerComponents } from "./components/index.jsx";
-
-// Import config from the project root (3 levels up from src/main.jsx)
-import config from "../../../cms.config.jsx";
-
-registerComponents(config);
+import { componentsMap } from "virtual:cms-components";
 
 function App() {
   const [pageData, setPageData] = useState(null);
@@ -21,7 +14,8 @@ function App() {
       try {
         const path = window.location.pathname;
         // remove trailing slash
-        const cleanPath = path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
+        const cleanPath =
+          path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
 
         // if path is empty, set to index
         const finalPath = cleanPath === "/" ? "index" : cleanPath;
@@ -69,7 +63,7 @@ function App() {
   }
 
   try {
-    return typeProcessor(pageData);
+    return typeProcessor(pageData, { components: componentsMap });
   } catch (renderError) {
     console.error("Error processing page data:", renderError);
     return (

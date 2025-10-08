@@ -7,15 +7,11 @@ import {
   BuildError,
 } from "./src/processor/generateStaticHTML.js";
 
-import { registerComponents } from "./src/components/index.jsx";
-
 import config from "./cms.config.jsx";
 
 const BASE_DIR = config.content.base || "pages";
 const PATTERN = config.content.pattern || "**/*.json";
 const PAGE_FILES_PATTERN = `${BASE_DIR}/${PATTERN}`;
-
-registerComponents(config);
 
 // Plugin that only processes pages without building the main app
 function pagesOnlyPlugin() {
@@ -25,7 +21,11 @@ function pagesOnlyPlugin() {
       console.log("🔨 Building pages only...");
 
       try {
-        await processAllPages({pattern: PAGE_FILES_PATTERN, baseDir: BASE_DIR});
+        await processAllPages({
+          pattern: PAGE_FILES_PATTERN,
+          baseDir: BASE_DIR,
+          components,
+        });
         console.log("🎉 All pages built successfully!");
       } catch (error) {
         console.error("\n💀 PAGE BUILD FAILED:");

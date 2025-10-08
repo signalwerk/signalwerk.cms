@@ -42,11 +42,20 @@ class BuildError extends Error {
 }
 
 // Server-side rendering function
-export async function generateStaticHTML(processedData, filePath = "unknown") {
+export async function generateStaticHTML(processedData, { filePath = "unknown", components }) {
+  if (!components) {
+    throw new BuildError(
+      `Components registry is required for rendering`,
+      filePath,
+      null,
+      "Configuration",
+    );
+  }
+
   try {
     let appHtml;
     try {
-      appHtml = renderToString(typeProcessor(processedData));
+      appHtml = renderToString(typeProcessor(processedData, { components }));
     } catch (renderError) {
       throw new BuildError(
         `Failed to render React component`,
@@ -98,8 +107,17 @@ export async function generateStaticHTML(processedData, filePath = "unknown") {
   }
 }
 
-export async function processPageFile(filePath, { baseDir }) {
+export async function processPageFile(filePath, { baseDir, components }) {
   console.log(`🔄 Processing: ${filePath}`);
+
+  if (!components) {
+    throw new BuildError(
+      `Components registry is required for processing`,
+      filePath,
+      null,
+      "Configuration",
+    );
+  }
 
   try {
     const fileExtension = path.extname(filePath);
@@ -172,7 +190,7 @@ export async function processPageFile(filePath, { baseDir }) {
     }
 
     // Generate HTML
-    const html = await generateStaticHTML(pageData, filePath);
+    const html = await generateStaticHTML(pageData, { filePath, components });
 
     // Write output file
     try {
